@@ -8,11 +8,23 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "nlb.pomatti.io"
+  domain_name       = "aws-nlb.pomatti.io"
   validation_method = "DNS"
 
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+resource "aws_lb_listener" "tcp" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
+  protocol          = "TCP"
+  alpn_policy       = "HTTP2Preferred"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.http.arn
   }
 }
 

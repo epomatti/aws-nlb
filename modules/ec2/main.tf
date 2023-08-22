@@ -59,66 +59,53 @@ resource "aws_iam_instance_profile" "main" {
   role = aws_iam_role.main.id
 }
 
-resource "aws_launch_configuration" "main" {
-  name_prefix   = "launchconfig-${var.workload}"
-  image_id      = var.ami_id
-  instance_type = var.instance_type
+resource "aws_launch_template" "main" {
+  name          = "launchtemplate-${var.workload}"
+  image_id      = "ami-08fdd91d87f63bb09"
+  user_data     = filebase64("${path.module}/userdata.sh")
+  instance_type = "t4g.nano"
 
-  iam_instance_profile = aws_iam_instance_profile.main.name
-  security_groups      = [aws_default_security_group.default.id]
-
-  lifecycle {
-    create_before_destroy = true
+  iam_instance_profile {
+    # name = "test"
+    arn = aws_iam_instance_profile.main.arn
   }
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  monitoring {
+    enabled = false
+  }
+
+  network_interfaces {
+    associate_public_ip_address = false
+  }
+
+  vpc_security_group_ids = [aws_security_group.main.id]
+
+  # tag_specifications {
+  #   resource_type = "instance"
+
+  #   tags = {
+  #     Name = "test"
+  #   }
+  # }
 }
 
 resource "aws_autoscaling_group" "default" {
-  name                 = "asg-${var.workload}"
-  launch_configuration = aws_launch_configuration.main.name
-  min_size             = 1
-  max_size             = 1
-  desired_capacity     = 1
-  vpc_zone_identifier  = var.subnets
-  target_group_arns    = var.target_group
+  name = "asg-${var.workload}"
+  launch_template {
+    id = aws_launch_template.main.id
+  }
+  min_size            = 1
+  max_size            = 1
+  desired_capacity    = 1
+  vpc_zone_identifier = var.subnets
+  target_group_arns   = var.target_group
 
   lifecycle {
     create_before_destroy = true
   }
 }
-
-# resource "aws_instance" "box" {
-#   ami           = "ami-08fdd91d87f63bb09"
-#   instance_type = "t4g.nano"
-
-#   associate_public_ip_address = true
-#   subnet_id                   = var.subnet
-#   vpc_security_group_ids      = [aws_security_group.main.id]
-
-#   availability_zone    = var.az
-#   iam_instance_profile = aws_iam_instance_profile.main.id
-#   user_data            = file("${path.module}/userdata.sh")
-
-#   metadata_options {
-#     http_endpoint = "enabled"
-#     http_tokens   = "required"
-#   }
-
-#   monitoring    = false
-#   ebs_optimized = false
-
-#   root_block_device {
-#     encrypted = true
-#   }
-
-#   lifecycle {
-#     ignore_changes = [
-#       ami,
-#       associate_public_ip_address,
-#       user_data
-#     ]
-#   }
-
-#   tags = {
-#     Name = "${local.affix}-nat"
-#   }
-# }
