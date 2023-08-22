@@ -11,7 +11,7 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "vpc-${local.workload}"
+    Name = "vpc-${var.workload}"
   }
 }
 
@@ -21,7 +21,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "ig-${local.workload}"
+    Name = "ig-${var.workload}"
   }
 }
 
@@ -30,7 +30,7 @@ resource "aws_internet_gateway" "main" {
 module "private" {
   source   = "./private"
   vpc_id   = aws_vpc.main.id
-  workload = local.workload
+  workload = var.workload
 
   az1 = local.az1
   az2 = local.az2
@@ -41,7 +41,7 @@ module "public" {
   source              = "./public"
   vpc_id              = aws_vpc.main.id
   interget_gateway_id = aws_internet_gateway.main.id
-  workload            = local.workload
+  workload            = var.workload
 
   az1 = local.az1
   az2 = local.az2

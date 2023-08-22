@@ -44,7 +44,7 @@ resource "aws_lb_listener" "tls" {
 resource "aws_lb_target_group" "http" {
   name        = "tg-lb-${var.workload}"
   port        = 80
-  protocol    = "HTTP"
+  protocol    = "TCP"
   target_type = "ip"
   vpc_id      = var.vpc_id
 
