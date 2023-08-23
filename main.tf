@@ -35,3 +35,10 @@ module "ec2" {
   subnets      = module.network.public_subnets
   target_group = module.nlb.target_group_arn
 }
+
+module "jump" {
+  source   = "./modules/jump"
+  workload = local.workload
+  vpc_id   = module.network.vpc_id
+  subnet   = module.network.public_subnets[0]
+}
