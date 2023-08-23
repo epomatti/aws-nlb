@@ -37,6 +37,7 @@ module "ec2" {
 }
 
 module "jump" {
+  count    = var.create_jumpserver ? 1 : 0
   source   = "./modules/jump"
   workload = local.workload
   vpc_id   = module.network.vpc_id
