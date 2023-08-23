@@ -60,7 +60,7 @@ resource "aws_launch_template" "main" {
     resource_type = "instance"
 
     tags = {
-      Name = "NLB EC2 template"
+      Name = "nlb-ec2-instance"
     }
   }
 }
