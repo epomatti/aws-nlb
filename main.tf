@@ -21,10 +21,11 @@ module "network" {
 }
 
 module "nlb" {
-  source   = "./modules/nlb"
-  workload = local.workload
-  vpc_id   = module.network.vpc_id
-  subnets  = module.network.public_subnets
+  source         = "./modules/nlb"
+  workload       = local.workload
+  vpc_id         = module.network.vpc_id
+  subnets        = module.network.public_subnets
+  acm_nlb_domain = var.acm_nlb_domain
 }
 
 module "ec2" {

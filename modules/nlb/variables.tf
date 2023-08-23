@@ -10,3 +10,6 @@ variable "subnets" {
   type = list(string)
 }
 
+variable "acm_nlb_domain" {
+  type = string
+}

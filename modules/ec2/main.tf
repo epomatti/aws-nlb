@@ -81,29 +81,31 @@ resource "aws_launch_template" "main" {
 
   network_interfaces {
     associate_public_ip_address = false
+    security_groups             = [aws_security_group.main.id]
   }
 
-  vpc_security_group_ids = [aws_security_group.main.id]
+  tag_specifications {
+    resource_type = "instance"
 
-  # tag_specifications {
-  #   resource_type = "instance"
-
-  #   tags = {
-  #     Name = "test"
-  #   }
-  # }
+    tags = {
+      Name = "NLB EC2 template"
+    }
+  }
 }
 
 resource "aws_autoscaling_group" "default" {
-  name = "asg-${var.workload}"
-  launch_template {
-    id = aws_launch_template.main.id
-  }
+  name                = "asg-${var.workload}"
   min_size            = 1
   max_size            = 1
   desired_capacity    = 1
   vpc_zone_identifier = var.subnets
   target_group_arns   = [var.target_group]
+
+  // Make sure both fields "id" and "version" are set to not conflict with the launch template
+  launch_template {
+    id      = aws_launch_template.main.id
+    version = aws_launch_template.main.latest_version
+  }
 
   lifecycle {
     create_before_destroy = true

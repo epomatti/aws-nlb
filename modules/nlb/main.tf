@@ -8,7 +8,7 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "aws-nlb.pomatti.io"
+  domain_name       = var.acm_nlb_domain
   validation_method = "DNS"
 
   lifecycle {
@@ -20,7 +20,6 @@ resource "aws_lb_listener" "tcp" {
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
   protocol          = "TCP"
-  alpn_policy       = "HTTP2Preferred"
 
   default_action {
     type             = "forward"
@@ -30,7 +29,7 @@ resource "aws_lb_listener" "tcp" {
 
 resource "aws_lb_listener" "tls" {
   load_balancer_arn = aws_lb.main.arn
-  port              = "443"
+  port              = 443
   protocol          = "TLS"
   certificate_arn   = aws_acm_certificate.cert.arn
   alpn_policy       = "HTTP2Preferred"
@@ -45,7 +44,7 @@ resource "aws_lb_target_group" "http" {
   name        = "tg-lb-${var.workload}"
   port        = 80
   protocol    = "TCP"
-  target_type = "ip"
+  target_type = "instance"
   vpc_id      = var.vpc_id
 
   health_check {
