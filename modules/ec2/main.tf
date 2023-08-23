@@ -25,35 +25,6 @@ resource "aws_iam_role_policy_attachment" "main" {
   policy_arn = data.aws_iam_policy.AmazonSSMManagedInstanceCore.arn
 }
 
-resource "aws_security_group" "main" {
-  name        = "ec2-ssm-${var.workload}-nat"
-  description = "Controls access for EC2 via Session Manager"
-  vpc_id      = var.vpc_id
-
-  tags = {
-    Name = "sg-ssm-${var.workload}-nat"
-  }
-}
-
-resource "aws_security_group_rule" "allow_all_ingress" {
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.main.id
-}
-
-resource "aws_security_group_rule" "allow_all_egress" {
-  type              = "egress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.main.id
-}
-
-
 resource "aws_iam_instance_profile" "main" {
   name = "instance-profile-${var.workload}"
   role = aws_iam_role.main.id
@@ -110,4 +81,32 @@ resource "aws_autoscaling_group" "default" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "aws_security_group" "main" {
+  name        = "ec2-ssm-${var.workload}-nat"
+  description = "Controls access for EC2 via Session Manager"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "sg-ssm-${var.workload}-nat"
+  }
+}
+
+resource "aws_security_group_rule" "allow_all_ingress" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.main.id
+}
+
+resource "aws_security_group_rule" "allow_all_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.main.id
 }

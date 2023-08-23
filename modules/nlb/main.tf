@@ -65,8 +65,16 @@ resource "aws_security_group" "lb" {
   }
 }
 
+resource "aws_security_group_rule" "inbound_http" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.lb.id
+}
+
 resource "aws_security_group_rule" "inbound_https" {
-  description       = "Allows secure internet inbound traffic"
   type              = "ingress"
   from_port         = 443
   to_port           = 443
@@ -75,12 +83,21 @@ resource "aws_security_group_rule" "inbound_https" {
   security_group_id = aws_security_group.lb.id
 }
 
-resource "aws_security_group_rule" "outbound_ecs" {
-  description       = "Allows traffic to ECS"
+
+resource "aws_security_group_rule" "outbound_ecs_http" {
   type              = "egress"
   from_port         = 80
   to_port           = 80
   protocol          = "tcp"
-  cidr_blocks       = ["10.0.0.0/16"]
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.lb.id
+}
+
+resource "aws_security_group_rule" "outbound_ecs_https" {
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.lb.id
 }
