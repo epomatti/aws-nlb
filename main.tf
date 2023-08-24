@@ -12,6 +12,7 @@ provider "aws" {
 
 locals {
   workload = "awsomeapp"
+  elb_name = "nlb-${local.workload}"
 }
 
 module "network" {
@@ -20,12 +21,21 @@ module "network" {
   region   = var.region
 }
 
+module "bucket" {
+  source         = "./modules/s3"
+  elb_account_id = var.elb_account_id
+  elb_name       = local.elb_name
+}
+
 module "nlb" {
-  source         = "./modules/nlb"
-  workload       = local.workload
-  vpc_id         = module.network.vpc_id
-  subnets        = module.network.public_subnets
-  acm_nlb_domain = var.acm_nlb_domain
+  source                = "./modules/nlb"
+  workload              = local.workload
+  vpc_id                = module.network.vpc_id
+  subnets               = module.network.public_subnets
+  acm_nlb_domain        = var.acm_nlb_domain
+  bucket                = module.bucket.bucket
+  elb_name              = local.elb_name
+  enable_elb_accesslogs = var.enable_elb_accesslogs
 }
 
 module "ec2" {

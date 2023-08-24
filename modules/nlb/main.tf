@@ -1,10 +1,16 @@
 resource "aws_lb" "main" {
-  name                       = "nlb-${var.workload}"
+  name                       = var.elb_name
   internal                   = false
   load_balancer_type         = "network"
   security_groups            = [aws_security_group.lb.id]
   subnets                    = var.subnets
   enable_deletion_protection = false
+
+  access_logs {
+    bucket  = var.bucket
+    prefix  = var.elb_name
+    enabled = var.enable_elb_accesslogs
+  }
 }
 
 resource "aws_acm_certificate" "cert" {
@@ -33,6 +39,7 @@ resource "aws_lb_listener" "tls" {
   protocol          = "TLS"
   certificate_arn   = aws_acm_certificate.cert.arn
   alpn_policy       = "HTTP2Preferred"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
 
   default_action {
     type             = "forward"
