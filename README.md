@@ -13,7 +13,11 @@ terraform init
 terraform apply -auto-approve
 ```
 
-NLB supports [TLS termination][2], allowing it to use either TLS or TCP target protocols, depending on the solution requirements.
+Additional information regarding NLBs:
+
+- NLB supports [TLS termination][2], allowing it to use either `TLS` (forward the TLS) or `TCP` (terminates the TLS) target protocols, depending on the solution requirements.
+- ALPN assists in the TLS negotiation to determine the protocol version.
+- SNI allows and NLB listener to serve for multiple domains over TLS.
 
 [1]: https://aws.amazon.com/about-aws/whats-new/2020/05/network-load-balancer-now-supports-tls-alpn-policies/
 [2]: https://aws.amazon.com/blogs/aws/new-tls-termination-for-network-load-balancers/
