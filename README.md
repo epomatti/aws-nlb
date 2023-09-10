@@ -8,7 +8,13 @@ This NLP implementation uses [ALPN][1]:
 
 > Using ALPN policies, you can now offload your application’s TLS HTTP/2 traffic decryption/encryption to the Network Load Balancer, improving your service security posture and reducing operational complexity.
 
-```
+Additionally, this code will also provision a VPC Endpoint Service and a connected VPC Endpoint for private connection with the Network Load Balancer.
+
+<img src=".assets/nlb-vpce.png" />
+
+Create the resources:
+
+```sh
 terraform init
 terraform apply -auto-approve
 ```
