@@ -13,6 +13,14 @@ terraform init
 terraform apply -auto-approve
 ```
 
+⚠️ The script is intended to fail when creating the VCP Endpoint. You'll need to verify the VPC Endpoint Service DNS prior to continuing.
+
+To connect to the jump server from your local box:
+
+```sh
+aws ssm start-session --target i-00000000000000000
+```
+
 Additional information regarding NLBs:
 
 - NLB supports [TLS termination][2], allowing it to use either `TLS` (forward the TLS) or `TCP` (terminates the TLS) target protocols, depending on the solution requirements.

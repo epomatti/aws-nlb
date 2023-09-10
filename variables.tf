@@ -8,9 +8,9 @@ variable "acm_nlb_domain" {
   default = "aws-nlb.pomatti.io"
 }
 
-variable "create_jumpserver" {
-  type    = bool
-  default = false
+variable "vpces_private_name" {
+  type    = string
+  default = "aws-nlb-vpces.pomatti.io"
 }
 
 variable "elb_account_id" {
@@ -22,4 +22,14 @@ variable "elb_account_id" {
 variable "enable_elb_accesslogs" {
   type    = bool
   default = false
+}
+
+variable "create_jumpserver" {
+  type    = bool
+  default = true
+}
+
+variable "create_vpces" {
+  type    = bool
+  default = true
 }

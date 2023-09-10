@@ -53,3 +53,13 @@ module "jump" {
   vpc_id   = module.network.vpc_id
   subnet   = module.network.public_subnets[0]
 }
+
+module "vpces_nbl" {
+  count              = var.create_vpces ? 1 : 0
+  source             = "./modules/vpces"
+  affix              = local.workload
+  vpc_id             = module.network.vpc_id
+  nlb_arn            = module.nlb.lb_arn
+  subnets            = module.network.public_subnets
+  vpces_private_name = var.vpces_private_name
+}
